@@ -130,3 +130,48 @@ int SequenceNode::execute() {
     status = right->execute();
     return status;
 }
+
+int SubshellNode::execute() {
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        perror("fork failed");
+        return EXIT_FAILURE;
+    } else if (pid == 0) {
+        // In the child process
+        int status = child->execute();
+        exit(status); // Exit with the status from the child
+    }
+
+    // Only parent process should reach this code
+    int status;
+    waitpid(pid, &status, 0); // Wait for the child to finish
+    return status;
+}
+
+int RedirectionNode::execute() {
+    std::cout << "RedirectionNode::execute() not implemented" << std::endl;
+    int status = child->execute();
+    return status;
+}
+
+int BackgroundNode::execute() {
+    std::cout << "BackgroundNode::execute() not implemented" << std::endl;
+    int status = child->execute();
+    return status;
+}
+
+int NegateNode::execute() {
+    int status = child->execute();
+    return !status;
+}
+
+int AssignmentNode::execute() {
+    std::cout << "AssignmentNode::execute() not implemented" << std::endl;
+    return EXIT_SUCCESS;
+}
+
+int CommandSubstitutionNode::execute() {
+    std::cout << "CommandSubstitutionNode::execute() not implemented" << std::endl;
+    return EXIT_SUCCESS;
+}

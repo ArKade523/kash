@@ -8,6 +8,7 @@ class Node {
         virtual int execute() = 0;
 };
 
+// A command like ls, cat, etc.
 class CommandNode : public Node {
     private:
         std::vector<std::string> args;
@@ -17,6 +18,7 @@ class CommandNode : public Node {
 
 };
 
+// Builtin commands like cd, pwd, and exit
 class BuiltinCommandNode : public Node {
     private:
         std::vector<std::string> args;
@@ -25,6 +27,7 @@ class BuiltinCommandNode : public Node {
         virtual int execute() override;
 };
 
+// | operator
 class PipelineNode : public Node {
     private:
         std::unique_ptr<Node> left;
@@ -37,6 +40,7 @@ class PipelineNode : public Node {
         }
 };
 
+// && operator
 class AndNode : public Node {
     private:
         std::unique_ptr<Node> left;
@@ -49,6 +53,7 @@ class AndNode : public Node {
         }
 };
 
+// || operator
 class OrNode : public Node {
     private:
         std::unique_ptr<Node> left;
@@ -61,6 +66,7 @@ class OrNode : public Node {
         }
 };
 
+// ; operator
 class SequenceNode : public Node {
     private:
         std::unique_ptr<Node> left;
@@ -73,6 +79,7 @@ class SequenceNode : public Node {
         }
 };
 
+// A node that represents a subshell
 class SubshellNode : public Node {
     private:
         Node *child;
@@ -81,6 +88,7 @@ class SubshellNode : public Node {
         virtual int execute() override;
 };
 
+// A node that represents a redirection
 class RedirectionNode : public Node {
     private:
         Node *child;
@@ -92,6 +100,7 @@ class RedirectionNode : public Node {
         virtual int execute() override;
 };
 
+// A node that represents a background process
 class BackgroundNode : public Node {
     private:
         Node *child;
@@ -100,6 +109,7 @@ class BackgroundNode : public Node {
         virtual int execute() override;
 };
 
+// A node that represents a negation
 class NegateNode : public Node {
     private:
         Node *child;
@@ -108,6 +118,7 @@ class NegateNode : public Node {
         virtual int execute() override;
 };
 
+// A node that represents a variable assignment
 class AssignmentNode : public Node {
     private:
         std::string var;
@@ -117,6 +128,7 @@ class AssignmentNode : public Node {
         virtual int execute() override;
 };
 
+// A node that represents a command substitution
 class CommandSubstitutionNode : public Node {
     private:
         Node *child;
