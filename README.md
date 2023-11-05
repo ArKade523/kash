@@ -22,7 +22,7 @@ brew --prefix readline
 Use that path to compile the shell by modifying the CMake compilation step, like this:
 ```
 cd build
-cmake .. -DREADLINE_INCLUDE_DIR=<path to readline>/include -READLINE_LIBRARY_DIR=<path to readline>/lib
+cmake .. -DREADLINE_INCLUDE_DIR=<path to readline>/include -DREADLINE_LIBRARY_DIR=<path to readline>/lib
 make
 ```
 
