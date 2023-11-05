@@ -86,12 +86,13 @@ int main(void) {
         // Read input
         input = readline(prompt.c_str());
 
-        std::string input_str = std::string(input);
 
         if (input == nullptr) {
             // EOF reached, exit
             break;
         }
+        
+        std::string input_str = std::string(input);
 
         // Exit the shell on 'exit' command
         if (input_str == "exit") {

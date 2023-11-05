@@ -28,31 +28,26 @@ std::unique_ptr<Node> parse_command(const std::string &input) {
     std::string token;
     std::unique_ptr<Node> current_node;
 
-    while (iss >> token) {
-        if (token == "&&") {
-            // && operator found, create an AND node and update the current node
-            std::unique_ptr<Node> left_node = std::make_unique<CommandNode>(args);
+     while (iss >> token) {
+        if (token == "&&" || token == "||" || token == "|") {
+            std::unique_ptr<Node> left_node;
+            if (is_builtin_command(args[0])) {
+                left_node = std::make_unique<BuiltinCommandNode>(args);
+            } else {
+                left_node = std::make_unique<CommandNode>(args);
+            }
             args.clear(); // clear args for the right side
-            // Using a ternary operator here to check if we have a current node
-            current_node = current_node
-                ? std::make_unique<AndNode>(std::move(current_node), std::move(left_node))
-                : std::move(left_node);
-        } else if (token == "||") {
-            // || operator found, create an OR node and update the current node
-            std::unique_ptr<Node> left_node = std::make_unique<CommandNode>(args);
-            args.clear(); // clear args for the right side
-            // Using a ternary operator here to check if we have a current node
-            current_node = current_node
-                ? std::make_unique<OrNode>(std::move(current_node), std::move(left_node))
-                : std::move(left_node);
-        } else if (token == "|") {
-            // | operator found, create a PIPELINE node and update the current node
-            std::unique_ptr<Node> left_node = std::make_unique<CommandNode>(args);
-            args.clear(); // clear args for the right side
-            // Using a ternary operator here to check if we have a current node
-            current_node = current_node
-                ? std::make_unique<PipelineNode>(std::move(current_node), std::move(left_node))
-                : std::move(left_node);
+
+            std::unique_ptr<Node> right_node = parse_command(std::string(std::istreambuf_iterator<char>(iss), {}));
+            
+            if (token == "&&") {
+                current_node = std::make_unique<AndNode>(std::move(left_node), std::move(right_node));
+            } else if (token == "||") {
+                current_node = std::make_unique<OrNode>(std::move(left_node), std::move(right_node));
+            } else if (token == "|") {
+                current_node = std::make_unique<PipelineNode>(std::move(left_node), std::move(right_node));
+            }
+            break; // Break after setting the right-hand side of the operator
         } else {
             // Not an operator, add to args
             args.push_back(token);

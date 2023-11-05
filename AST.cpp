@@ -83,33 +83,44 @@ int PipelineNode::execute() {
         return EXIT_FAILURE;
     }
 
-    pid_t pid = fork();
+    pid_t left_pid = fork();
 
-    if (pid == -1) {
-        // Error
+    if (left_pid == -1) {
         perror("fork failed");
         return EXIT_FAILURE;
-    } else if (pid == 0) {
-        // Child process
-        // Close the read end of the pipe
-        close(pipefd[0]);
-        // Redirect stdout to the write end of the pipe
-        dup2(pipefd[1], STDOUT_FILENO);
-        // Close the write end of the pipe
-        close(pipefd[1]);
-        // Execute the left side of the pipeline
+    } else if (left_pid == 0) {
+        // In the child process (left side of the pipeline)
+        close(pipefd[0]); // Close the unused read end
+        dup2(pipefd[1], STDOUT_FILENO); // Redirect stdout to the write end of the pipe
+        close(pipefd[1]); // Close the write end after it's duplicated
+
         int status = left->execute();
-        exit(status);
-    } else {
-        // Parent process
-        // Close the write end of the pipe
-        close(pipefd[1]);
-        // Redirect stdin to the read end of the pipe
-        dup2(pipefd[0], STDIN_FILENO);
-        // Close the read end of the pipe
-        close(pipefd[0]);
-        // Execute the right side of the pipeline
-        int status = right->execute();
-        return status;
+        exit(status); // Exit with the status from the left side command
     }
+
+    // Only parent process should reach this code
+    pid_t right_pid = fork();
+
+    if (right_pid == -1) {
+        perror("fork failed");
+        return EXIT_FAILURE;
+    } else if (right_pid == 0) {
+        // In the child process (right side of the pipeline)
+        close(pipefd[1]); // Close the unused write end
+        dup2(pipefd[0], STDIN_FILENO); // Redirect stdin to the read end of the pipe
+        close(pipefd[0]); // Close the read end after it's duplicated
+
+        int status = right->execute();
+        exit(status); // Exit with the status from the right side command
+    }
+
+    // Only parent process should reach this code
+    close(pipefd[0]); // Parent doesn't use the read end
+    close(pipefd[1]); // Parent doesn't use the write end
+
+    int status;
+    waitpid(left_pid, &status, 0); // Wait for the left side to finish
+    waitpid(right_pid, &status, 0); // Then wait for the right side to finish
+
+    return status; // Return the status of the last command in the pipeline
 }

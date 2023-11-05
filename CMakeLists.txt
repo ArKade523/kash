@@ -10,7 +10,7 @@ set(READLINE_LIBRARY_DIR "/usr/local/opt/readline/lib")
 set(READLINE_LIBRARY "/usr/local/opt/readline/lib/libreadline.a") # Explicitly specify the library file
 
 # Ensure that CMake uses the library path we provided for linking
-set(CMAKE_EXE_LINKER_FLAGS "-L${READLINE_LIBRARY_DIR} -lreadline")
+set(CMAKE_EXE_LINKER_FLAGS "-L${READLINE_LIBRARY_DIR} -lreadline -g")
 
 # Add the executable with all the source files
 add_executable(kash kash.cpp AST.cpp parse_commands.cpp)
