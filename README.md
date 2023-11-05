@@ -9,7 +9,7 @@ There is a previous version of this that I built without using a complex parser 
 
 ## Instructions for building (on mac, other systems not tested)
 
-Make sure that readline is installed using homebrew (macOS has a version built-int, but it's too old to work)
+Make sure that readline is installed using homebrew (macOS has a version built-in, but it's too old to work)
 ```
 brew install --formulae readline
 ```
