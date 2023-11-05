@@ -29,7 +29,7 @@ std::unique_ptr<Node> parse_command(const std::string &input) {
     std::unique_ptr<Node> current_node;
 
      while (iss >> token) {
-        if (token == "&&" || token == "||" || token == "|") {
+        if (token == "&&" || token == "||" || token == "|" || token == ";") {
             std::unique_ptr<Node> left_node;
             if (is_builtin_command(args[0])) {
                 left_node = std::make_unique<BuiltinCommandNode>(args);
@@ -46,6 +46,8 @@ std::unique_ptr<Node> parse_command(const std::string &input) {
                 current_node = std::make_unique<OrNode>(std::move(left_node), std::move(right_node));
             } else if (token == "|") {
                 current_node = std::make_unique<PipelineNode>(std::move(left_node), std::move(right_node));
+            } else if (token == ";") {
+                current_node = std::make_unique<SequenceNode>(std::move(left_node), std::move(right_node));
             }
             break; // Break after setting the right-hand side of the operator
         } else {
@@ -71,6 +73,8 @@ std::unique_ptr<Node> parse_command(const std::string &input) {
             orNode->setRightChild(std::make_unique<CommandNode>(args));
         } else if (auto pipelineNode = dynamic_cast<PipelineNode*>(current_node.get())) {
             pipelineNode->setRightChild(std::make_unique<CommandNode>(args));
+        } else if (auto sequenceNode = dynamic_cast<SequenceNode*>(current_node.get())) {
+            sequenceNode->setRightChild(std::make_unique<CommandNode>(args));
         }
     }
 

@@ -124,3 +124,9 @@ int PipelineNode::execute() {
 
     return status; // Return the status of the last command in the pipeline
 }
+
+int SequenceNode::execute() {
+    int status = left->execute();
+    status = right->execute();
+    return status;
+}
