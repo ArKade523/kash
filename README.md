@@ -5,6 +5,8 @@ This project was built for fun, mostly over the course of one weekend.
 
 Still need to implement wildcards, but shell operators are already partially implemented using a custom parser that builds an abstract syntax tree (AST code is in the AST.cpp and AST.hpp files). The parsing code is in my parse_commands.cpp file. 
 
+There is a previous version of this that I built without using a complex parser and exists entirely within one file that has been migrated to the simple-kash/ folder
+
 ## Instructions for building (on mac, other systems not tested)
 
 Make sure that readline is installed using homebrew (macOS has a version built-int, but it's too old to work)
