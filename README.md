@@ -3,7 +3,7 @@ A Unix shell built by me
 
 This project was built for fun, mostly over the course of one weekend.
 
-Still need to implement wildcards, shell operators
+Still need to implement wildcards, but shell operators are already partially implemented using a custom parser that builds an abstract syntax tree (AST code is in the AST.cpp and AST.hpp files). The parsing code is in my parse_commands.cpp file. 
 
 ## Instructions for building (on mac, other systems not tested)
 
@@ -17,12 +17,16 @@ To determine the location it's installed at, run this:
 brew --prefix readline
 ```
 
-Use that path to compile the shell, like this:
+Use that path to compile the shell by modifying the CMake compilation step, like this:
 ```
-g++ -I<path to readline>/include -L<path to readline>/lib kash.cpp -o kash -std=c++11 -lreadline
+cd build
+cmake .. -DREADLINE_INCLUDE_DIR=<path to readline>/include -READLINE_LIBRARY_DIR=<path to readline>/lib
+make
 ```
 
-If your readline library is installed at `/usr/local/opt/readline`, the command will be this:
+If your readline library is installed at `/usr/local/opt/readline` (like mine), you can just build with the default cmake:
 ```
-g++ -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib kash.cpp -o kash -std=c++11 -lreadline
+cd build
+cmake ..
+make
 ```
